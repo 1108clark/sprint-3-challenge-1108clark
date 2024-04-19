@@ -210,42 +210,49 @@
       // 👉 HINT: if you are not feeling confident with map and filter, solve the problem with for loops,
       //      and with the piece of mind of all tests passing, refactor to use map/filter
       
-      constructor(...antNames) {
-        this.ants = antNames.map(name => ({ name, health: 100 }));
-    }
+      constructor(...ants) {
+        this.ants = ants.map((name) => ({name, health: 100}))
+      }
 
-    work() {
-        if (this.ants.length === 0) {
-            return "No ants here. Did you work them to death?";
+      work() {
+        let lengthAtBeginning = this.ants.length;
+
+        if(this.ants.length === 0) {
+          return "No ants here. Did you work them to death?";
         }
+
+        let arr = [-1,1,2];
         
-        this.ants = this.ants.map(ant => ({
-            name: ant.name,
-            health: ant.health - 20
-        })).filter(ant => ant.health > 0);
-
-        if (this.ants.length === 0) {
-            return "No ants here. Did you work them to death?";
-        }
-        return `${this.ants.length} ants starting work!`;
-    }
-
-    feed(antName) {
-        let found = false;
-
-        this.ants = this.ants.map(ant => {
-            if (ant.name === antName) {
-                found = true; 
-                return { ...ant, health: ant.health + 15 };
-            }
-            return ant;
+        this.ants.forEach(ant => {
+          ant.health -= 20;
+          if (ant.health <= 0) {
+            this.ants = this.ants.filter (a => a !== ant);
+          }
         });
 
-        return found ? "Yum!" : `${antName} not found!`;
-    }
-}
+        return `${lengthAtBeginning} ants starting work!`;
+      }
 
-      
+      feed(name) {
+      const antsToFeed = this.ants.filter((ant) => ant.name === name);
+
+      if (antsToFeed.length === 0){
+        return `${name} not found!`;
+      }     
+
+      antsToFeed.forEach((ant) => {
+        ant.health += 15;
+      });
+      return "Yum!"
+     }
+
+     removeAnt(ant) {
+      const index = this.ants.indexOf(ant);
+      if (index !== -1) {
+        this.ants.splice(index,1);
+      }
+     }
+    }
 
     // 🧪 TESTS, do not make any changes below this line ===================
     // 🧪 TESTS, do not make any changes below this line ===================
@@ -480,13 +487,8 @@
             const farm = new AntFarm('Jess', 'Blake', 'Jess')
             farm.ants[0].health++
             actual = []
-
-            farm.work(); 
-            farm.work(); 
-            farm.work(); 
-            actual.push(farm.work()); 
-            actual.push(farm.work()); 
-            actual.push(farm.work())
+            farm.work(); farm.work(); farm.work(); farm.work()
+            actual.push(farm.work()); actual.push(farm.work()); actual.push(farm.work())
           } catch (err) { actual = err.message }
           return [description, expected, actual]
         },
